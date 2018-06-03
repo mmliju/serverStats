@@ -10,12 +10,10 @@ $(document).ready(function(){
 			server_name: server
 		},
 		function(data, status){
-			//alert("Data: " + data + "\nStatus: " + status);
-			
 			var stat_arr = JSON.parse(data);
 			var x = [];
 			var y = [];
-			if(stat_arr.result == "Error")
+			if(stat_arr.result == "Error")//----error in fetching data from api----
 			{
 				var config = {
 					type: 'line',
@@ -24,14 +22,14 @@ $(document).ready(function(){
 							label: 'Error in loading data',
 							backgroundColor: window.chartColors.red,
 							borderColor: window.chartColors.red,
-							fill: true,
+							data: x,
+							fill: false,
 						}]
 					}};
 			}
 			else
 			{
 				$.each(stat_arr, function(key, value){
-					//console.log(key, value);
 					x.push(key); 
 					y.push(value); 
 					
@@ -40,12 +38,12 @@ $(document).ready(function(){
 				var config = {
 					type: 'line',
 					data: {
-						labels: y,
+						labels: x,
 						datasets: [{
 							label: 'Statistical values',
 							backgroundColor: window.chartColors.blue,
 							borderColor: window.chartColors.blue,
-							data: x,
+							data: y,
 							fill: false,
 						}]
 					},
@@ -53,7 +51,7 @@ $(document).ready(function(){
 						responsive: true,
 						title: {
 							display: true,
-							text: 'Server Performance'
+							text: 'Statistical values for '+server+''
 						},
 						tooltips: {
 							mode: 'index',
@@ -82,6 +80,7 @@ $(document).ready(function(){
 					}
 				};
 			}
+			//----------------setting up graph-----------------------
 			var ctx = document.getElementById('canvas').getContext('2d');
 			window.myLine = new Chart(ctx, config);
 			$("#loader").css("display", "none");

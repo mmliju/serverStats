@@ -24,7 +24,7 @@ class main {
 		return $this->generate_server_drop($server_arr['data']);
 		
 	}
-	//----------------------------------------
+	//-----------Create server dropdown list------------------
 	private function generate_server_drop($servers)
 	{
 		$select = "<select id='server_list' name='server_list'>";
@@ -34,27 +34,25 @@ class main {
 			foreach($servers as $list)
 			{
 				 $select.="<option value='".$list->s_system."'>".$list->s_system."</option>"; 
-				//$list->$this->server_list_key;
 			}
 		}
 		else
-		  $select.="<option value=''>Error in loading</option>";
+		  $select.="<option value='0'>Error in loading</option>";
 		$select.="</select>";
 		return $select;
 	}
-	//-----Ajax function------------------------
+	//-----Ajax function for server statisticss-----------------
 	public function get_server_details($server)
 	{
 		$stats_arr = $this->decode_data($this->server_statistics_url.$server.'/');
 		$stats_result = array();
-		 //print_r($stats_arr);
 		if($stats_arr['status'] == 1)
 		{
 			foreach($stats_arr['data'] as $stats)
 			{
-				$stats_result[$stats->data_value] = $stats->data_label;
+				$stats_result[$stats->data_label] = $stats->data_value;
 			}
-			usort($stats_result);
+			ksort($stats_result);
 			$statistics = json_encode($stats_result);
 			echo $statistics;
 		}
@@ -64,10 +62,8 @@ class main {
 			$statistics = json_encode($error_arr);
 			echo $statistics;
 		}
-		//print_r($stats_result);
-		//echo $this->server_statistics_url.$server.'/';
 	}
-	//-------------------------------------------------------------
+	//-----------decode api data---------------------
 	private function decode_data($url)
 	{
 		$api = file_get_contents($url);
