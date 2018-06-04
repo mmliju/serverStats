@@ -20,7 +20,7 @@ class main {
 	//------------------------------------
 	public function get_server_list()
 	{
-		$server_arr = $this->decode_data($this->server_list_url);
+		$server_arr = $this->decode_data($this->server_list_url,'GET');
 		return $this->generate_server_drop($server_arr['data']);
 		
 	}
@@ -44,7 +44,7 @@ class main {
 	//-----Ajax function for server statisticss-----------------
 	public function get_server_details($server)
 	{
-		$stats_arr = $this->decode_data($this->server_statistics_url.$server.'/');
+		$stats_arr = $this->decode_data($this->server_statistics_url.$server.'/','GET');
 		$stats_result = array();
 		if($stats_arr['status'] == 1)
 		{
@@ -64,9 +64,29 @@ class main {
 		}
 	}
 	//-----------decode api data---------------------
-	private function decode_data($url)
+	private function decode_data($url,$method)
 	{
-		$api = file_get_contents($url);
+		//$api = file_get_contents($url);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, 'Content-type: application/json');
+		curl_setopt($ch, CURLOPT_URL,$url);
+		//-----Restful api call-------------------
+		switch ($method){
+     	case "POST":
+			 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			 break;
+		case "PUT":
+			 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+			 break;
+		default:
+			 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+			 break;
+		}
+		//---------------------------------------------------------
+		$api=curl_exec($ch);
+		curl_close($ch);
 		$result_arr = json_decode($api);
 		if(count($result_arr) > 0)
 		{
